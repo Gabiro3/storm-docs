@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/contexts/theme-provider";
 import { Navbar } from "@/components/navbar";
-import { Space_Mono, Bricolage_Grotesque } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import { Footer } from "@/components/footer";
 import "@/styles/globals.css";
 
