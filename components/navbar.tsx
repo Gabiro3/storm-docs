@@ -79,7 +79,7 @@ export function Logo() {
     <Link href="/" className="flex items-center gap-2.5">
       <Image
         src="/storm_logo.png"
-        alt="Storm Pay Logo"
+        alt="Storm Pay"
         width={32}
         height={32}
         className="rounded-full"
