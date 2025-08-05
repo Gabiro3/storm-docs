@@ -1,0 +1,127 @@
+---
+title: Quick Start Guide
+description: Get started with the Storm Payments SDK in minutes.
+---
+
+Follow these simple instructions to set up the Storm Payments SDK and begin processing payments, managing wallets, and handling transactions without delay!
+
+<Note type="info">
+  The Storm SDK works with any JavaScript/TypeScript environment including
+  Node.js, React, Next.js, and more.
+</Note>
+
+## Installation & Setup
+
+To get started, you need to install it via npm.
+
+<Stepper>
+  <StepperItem title="Step 1: Install the SDK">
+    Install the Storm Payments SDK via npm:
+
+    ```bash
+    npm install storm-sdk
+    ```
+
+  </StepperItem>
+
+  <StepperItem title="Step 2: Initialize the Client">
+    Create a new Storm client instance:
+
+    ```typescript
+    import { StormClient } from '@storm/payments-sdk';
+
+const storm = new StormClient({
+baseUrl: 'https://storm-core2.onrender.com', // Your Storm API endpoint
+timeout: 30000, // Optional: request timeout in milliseconds
+});
+
+````
+
+  </StepperItem>
+
+  <StepperItem title="Step 3: Authentication">
+    Register a new user or login with existing credentials:
+
+    <Note title="Remember">
+      For a seamless experience, login with the correct user credentials and manually update request timeout params depending on your internet connection.
+      <br/>
+    </Note>
+
+    ```typescript
+    // Register a new user
+   const registration = await storm.register({
+     email: 'user@example.com',
+     password: 'SecurePass123!',
+     first_name: 'John',
+     last_name: 'Doe'
+   });
+
+   // Login and get authentication token
+   const auth = await storm.login({
+     email: 'user@example.com',
+     password: 'SecurePass123!'
+   });
+
+   // Token is automatically set for subsequent requests
+   console.log('Authenticated as:', auth.user.email);
+    ```
+
+  </StepperItem>
+
+  <StepperItem title="Step 4: Launch the Development Server">
+    Finally, start the development server to view the project locally:
+
+    ```plaintext
+    npm run dev
+    ```
+
+  </StepperItem>
+</Stepper>
+
+## Basic Wallet Operations
+
+<Stepper>
+  <StepperItem title="Step 1: Create Your First Wallet">
+
+    ```typescript
+    const wallet = await storm.createWallet({
+     name: 'My Main Wallet',
+     currency: 'USD'
+   });
+
+   console.log('Wallet created:', wallet.id);
+    ```
+
+  </StepperItem>
+
+  <StepperItem title="Step 2: Add Funds to Wallet">
+
+    ```typescript
+    const transaction = await storm.createTransaction({
+     wallet_id: wallet.id,
+     transaction_type: 'Credit',
+     amount: 50000, // $500.00 in cents
+     description: 'Initial deposit',
+     metadata: {
+       source: 'bank_transfer',
+       reference: 'DEP-001'
+     }
+   });
+
+   console.log('Funds added:', transaction.id);
+
+````
+
+  </StepperItem>
+
+  <StepperItem title="Step 3: Check Wallet Balance">
+
+    ```typescript
+    const balance = await storm.getWalletBalance(wallet.id);
+    console.log('Current balance:', balance.balance / 100, balance.currency); // We divide by 100 to get the actual value (converted from cents)
+    ```
+
+  </StepperItem>
+</Stepper>
+
+With this setup, you’ll have a ready-to-use StormClient for your payment needs.

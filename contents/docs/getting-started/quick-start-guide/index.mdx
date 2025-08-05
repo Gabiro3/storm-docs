@@ -1,0 +1,120 @@
+---
+title: Process A Payment
+description: Process your first payment using Storm SDK
+---
+
+Follow these simple instructions to set up your Storm SDK integration and process your first secure payment transaction with speed and confidence.⚡
+
+<Note type="info">
+  Storm SDK is built with a focus on speed, developer experience, and security.
+  These steps apply to all **TypeScript-based** projects using the SDK.
+</Note>
+
+## 1. Create a Payment
+
+```typescript
+import { createCardPaymentMethod } from "storm-sdk";
+
+const payment = await storm.createPayment({
+  merchant_id: "your_merchant_id",
+  amount: 2500, // $25.00 in cents
+  currency: "USD",
+  payment_method: createCardPaymentMethod(
+    "4242424242424242", // Test card number
+    12, // Expiry month
+    2025, // Expiry year
+    "123" // CVC
+  ),
+  metadata: {
+    order_id: "ORDER-001",
+    customer_email: "customer@example.com",
+  },
+});
+
+console.log("Payment created:", payment.id);
+```
+
+## 2. Confirm the Payment
+
+1. **Call the ConfirmedPayment function**
+
+   ```typescript
+   const confirmedPayment = await storm.confirmPayment(payment.id);
+   console.log("Payment status:", confirmedPayment.status);
+   ```
+
+   <Note type="warning">
+     {" "}
+     Some payments may require confirmation depending on your merchant configuration.
+     Always check the `status` returned.{" "}
+   </Note>
+
+2. **🔐 Error Handling**
+
+{" "}
+
+<Note type="info">
+  {" "}
+  Always wrap your payment calls in try-catch blocks to handle errors gracefully.{" "}
+</Note>
+
+```typescript
+import { StormError } from "storm-sdk";
+
+try {
+  const payment = await storm.createPayment({
+    /* ... */
+  });
+} catch (error) {
+  if (error instanceof StormError) {
+    console.error("Storm API Error:", error.message);
+    console.error("Status Code:", error.statusCode);
+    console.error("Error Code:", error.code);
+
+    switch (error.code) {
+      case "INVALID_PAYMENT_METHOD":
+        console.log("The provided payment method is invalid.");
+        break;
+      case "INSUFFICIENT_FUNDS":
+        console.log("Not enough funds to process the payment.");
+        break;
+      default:
+        console.log("An unexpected error occurred.");
+    }
+  } else {
+    console.error("Unexpected error:", error);
+  }
+}
+```
+
+## Environment Configuration
+
+For production applications, use environment variables:
+
+<Note type="warning">
+  Make sure to add your environment variables inside your .env file during
+  production.
+</Note>
+
+```typescript
+const storm = new StormClient({
+  baseUrl: process.env.STORM_API_URL || "https://api.storm-payments.com",
+  timeout: parseInt(process.env.STORM_TIMEOUT || "30000"),
+});
+
+// If you have a pre-existing token
+if (process.env.STORM_API_TOKEN) {
+  storm.setToken(process.env.STORM_API_TOKEN);
+}
+```
+
+## Next Steps
+
+Now that you have the basics working, explore these advanced features:
+
+- **[Wallet Management](/docs/wallets)** - Learn about multi-wallet systems and transfers
+- **[Payment Processing](/docs/payments)** - Explore different payment methods and flows
+- **[Transaction Management](/docs/transactions)** - Understand transaction types and history
+- **[Secure Vault](/docs/vault)** - Store sensitive data securely
+- **[Activity Monitoring](/docs/activity)** - Track and audit user activities
+- **[Error Handling](/docs/error-handling)** - Comprehensive error management strategies

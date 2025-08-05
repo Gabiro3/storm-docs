@@ -1,0 +1,113 @@
+---
+title: Complete Examples
+description: This section provides some code samples using the Storm SDK.
+---
+
+### Overview
+
+In this section, we will guide you through the basic functionality of the Storm SDK:
+
+1. **Authenticate** a user.
+2. **Create a Wallet** for storing funds.
+3. **Add Funds** to the wallet.
+4. **Process a Payment** with a credit card.
+5. **Check the Final Balance** of the wallet.
+
+Each step is explained below with code snippets.
+
+### 1. Authenticate the User 🚀
+
+The first step is to authenticate the user by providing their credentials.
+
+```typescript
+const auth = await storm.login({
+  email: "demo@example.com",
+  password: "SecurePass123!",
+});
+console.log("✅ Authenticated as:", auth.user.email);
+```
+
+### 2. Create a Wallet 💼
+
+After authentication, we can create a wallet to store funds.
+
+```typescript
+const wallet = await storm.createWallet({
+  name: "Demo Wallet",
+  currency: "USD",
+});
+console.log("✅ Wallet created:", wallet.id);
+```
+
+### 4. Process a Payment 💳
+
+Now, let's process a payment. We will simulate a card payment by creating a payment method.
+
+```typescript
+const payment = await storm.createPayment({
+  merchant_id: "demo_merchant",
+  amount: 5000, // $50.00
+  currency: "USD",
+  payment_method: createCardPaymentMethod("4242424242424242", 12, 2025, "123"),
+});
+
+const confirmedPayment = await storm.confirmPayment(payment.id);
+console.log("✅ Payment processed:", confirmedPayment.status);
+// You simulate a payment with a test card number.
+// The payment is confirmed and processed successfully.
+```
+
+### 5. Check Wallet Balance 💸
+
+After the payment is processed, we can check the final wallet balance.
+
+```typescript
+const balance = await storm.getWalletBalance(wallet.id);
+console.log("💰 Final balance:", formatCurrency(balance.balance));
+
+// The final balance of the wallet will be displayed in the correct currency format.
+```
+
+<Note type="warning">
+  {" "}
+  Proper error handling is crucial for production applications. The Storm SDK provides
+  detailed error information to help you handle different scenarios.{" "}
+</Note>
+
+```typescript
+import { StormError } from "@storm/payments-sdk";
+
+try {
+  const wallet = await storm.getWallet("invalid-wallet-id");
+} catch (error) {
+  if (error instanceof StormError) {
+    console.error("❌ Storm Error:", error.message);
+    console.error("Status Code:", error.statusCode);
+    console.error("Error Code:", error.code);
+
+    // Handle specific error types
+    switch (error.code) {
+      case "WALLET_NOT_FOUND":
+        console.log("The specified wallet does not exist");
+        break;
+      case "INSUFFICIENT_FUNDS":
+        console.log("Not enough funds for this transaction");
+        break;
+      default:
+        console.log("An unexpected error occurred");
+    }
+  } else {
+    console.error("❌ Unexpected error:", error);
+  }
+}
+```
+
+### Additional Information
+
+- **`Discord Support Channel`**: For any complex errors, bugs, or questions, join our [Discord community](https://discord.gg/EgzNm9bx) to get help from other developers and the Storm Pay team. We're here to assist with troubleshooting and ensure you can integrate the Storm Payments SDK smoothly into your project.
+
+- **`Troubleshooting`**: If you encounter any issues, we recommend checking the [Storm Payments SDK Documentation](https://discord.gg/EgzNm9bx) for potential solutions, as well as our [FAQ](https://stormpay.com/faq).
+
+- **`Examples & Community Projects`**: Check out other developer projects using the Storm Payments SDK in our community showcase, or share your own project for feedback and collaboration!
+
+This section provides code samples for working with the Storm SDK.
