@@ -7,13 +7,6 @@ import "@/styles/globals.css";
 
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"] })
 
-const monoFont = Space_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-  weight: "400",
-});
-
 export const metadata: Metadata = {
   title: "Storm Pay | SDK Documentation",
   metadataBase: new URL("https://stormpay.vercel.app/"),
