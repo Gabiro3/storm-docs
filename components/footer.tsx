@@ -37,7 +37,7 @@ export function FooterButtons() {
   return (
     <>
       <Link
-        href="/privacy-policy"
+        href="https://docs.google.com/document/d/1GNd-jxyb5CaDn1kvKJmeidmWQPtpMKKXvQ4RQ_dJ18k/edit?usp=sharing"
         className={buttonVariants({ variant: "outline", size: "sm" })}
       >
         <FileTextIcon className="h-4 w-4 mr-2" />
@@ -45,7 +45,7 @@ export function FooterButtons() {
       </Link>
 
       <Link
-        href="/terms-of-use"
+        href="https://docs.google.com/document/d/1GNd-jxyb5CaDn1kvKJmeidmWQPtpMKKXvQ4RQ_dJ18k/edit?usp=sharing"
         className={buttonVariants({ variant: "outline", size: "sm" })}
       >
         <ScrollTextIcon className="h-4 w-4 mr-2" />

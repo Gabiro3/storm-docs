@@ -9,7 +9,7 @@ const bricolage = Bricolage_Grotesque({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Storm Pay | SDK Documentation",
-  metadataBase: new URL("https://stormpay.vercel.app/"),
+  metadataBase: new URL("https://storm-docs.vercel.app/"),
   description:
     "Comprehensive SDK documentation for Storm Pay. Learn how to integrate Storm Pay SDK into your applications with detailed guides and examples.",
   icons: {
