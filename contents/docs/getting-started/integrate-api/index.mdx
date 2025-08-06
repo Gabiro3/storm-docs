@@ -1,0 +1,224 @@
+---
+title: Integrate Storm
+description: Start accepting payments using Storm's wallet-to-wallet platform.
+---
+
+Follow these simple instructions to set up your Storm Merchant Account and start accepting payments from your customers and app users.
+
+<Note type="info">
+  Storm supports modern JavaScript and TypeScript environments, including
+  Node.js, Express, React, and other full-stack frameworks.
+</Note>
+
+## 1. Create a Merchant Account
+
+To start accepting payments, you need a merchant account.
+
+Go to the **Storm Dashboard** and visit the [`/developers`](https://storm-pay.vercel.app/dashboard/developers) tab to get started.
+
+You can also create a merchant account via API request:
+
+```bash
+curl -X POST https://api.storm-payments.com/merchant/account \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "business_name": "Acme Inc",
+    "business_type": "E-commerce",
+    "business_email": "payments@acme.com",
+    "website_url": "https://acme.com",
+    "description": "Online tech store",
+    "tax_id": "12-3456789",
+    "webhook_url": "https://acme.com/webhooks/payments"
+  }'
+```
+
+Expected Response:
+
+```json
+{
+  "merchant": {
+    "id": "merchant_123e4567-e89b-12d3-a456-426614174000",
+    "user_id": "550e8400-e29b-41d4-a716-446655440000",
+    "business_name": "Acme E-commerce",
+    "business_type": "E-commerce",
+    "status": "Pending",
+    "verification_status": "Unverified",
+    "fee_percentage": 0.029,
+    "created_at": "2024-01-15T10:30:00Z"
+  },
+  "api_keys": {
+    "publishable_key": "pk_12345678_AbCdEfGhIjKlMnOpQrStUvWx",
+    "secret_key": "sk_87654321_XyZaBcDeFgHiJkLmNoPqRsTu"
+  },
+  "message": "Merchant account created successfully"
+}
+```
+
+## 2. Install the Storm SDK
+
+```typescript
+npm install storm-sdk
+```
+
+{" "}
+
+<Note type="warning">
+  {" "}
+  Some payments may require confirmation depending on your merchant configuration.
+  Always check the `status` returned.{" "}
+</Note>
+
+2. Create a Storm client:
+
+```typescript
+import { StormClient } from "storm-sdk";
+
+const storm = new StormClient({
+  baseUrl: "https://api.storm-payments.com",
+  timeout: 30000,
+});
+
+storm.setToken("YOUR_SECRET_KEY");
+```
+
+<Note type="warning">
+  {" "}
+  Never expose your secret key on the frontend. Use the `publishable_key` for client-side
+  calls.{" "}
+</Note>
+
+## Create a Payment
+
+```typescript
+const payment = await storm.createPayment({
+  merchant_id: "your_merchant_id",
+  amount: 2500, // $25.00
+  currency: "USD",
+  payment_method: {
+    method_type: "wallet",
+    details: {
+      wallet_id: "customer_wallet_id",
+    },
+  },
+  description: "Monthly subscription",
+  metadata: {
+    order_id: "ORDER-001",
+  },
+});
+
+console.log("Payment ID:", payment.id);
+```
+
+Or use a REST call:
+
+```bash
+curl -X POST https://api.storm-payments.com/merchant/payments \
+  -H "X-API-Key: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_wallet_id": "customer_wallet_id",
+    "amount": 2500,
+    "currency": "USD",
+    "description": "Monthly subscription",
+    "payment_method": {
+      "method_type": "wallet",
+      "details": {
+        "wallet_id": "customer_wallet_id"
+      }
+    }
+  }'
+```
+
+**Client-Side Integration**
+
+Use the publishable key to create a payment intent on the frontend:
+
+```typescript
+const response = await fetch("/payment-intents", {
+  method: "POST",
+  headers: {
+    "X-API-Key": "pk_test_ABC123",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    amount: 2500,
+    currency: "USD",
+    description: "One-time product purchase",
+  }),
+});
+
+const intent = await response.json();
+console.log("Client Secret:", intent.client_secret);
+```
+
+Use this client_secret to confirm the payment via your frontend UI.
+
+**Webhook Integration**
+Get notified about successful payments:
+
+```typescript
+app.post(
+  "/webhooks/payments",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const signature = req.headers["x-webhook-signature"];
+    const payload = req.body;
+
+    const expected = crypto
+      .createHmac("sha256", process.env.WEBHOOK_SECRET)
+      .update(payload)
+      .digest("hex");
+
+    if (`sha256=${expected}` !== signature) {
+      return res.status(400).send("Invalid signature");
+    }
+
+    const event = JSON.parse(payload);
+
+    switch (event.type) {
+      case "payment.succeeded":
+        // Fulfill order
+        break;
+      case "payment.failed":
+        // Handle error
+        break;
+    }
+
+    res.status(200).send("OK");
+  }
+);
+```
+
+**Environment Configuration**
+
+```typescript
+const storm = new StormClient({
+  baseUrl: process.env.STORM_API_URL || "https://api.storm-payments.com",
+  timeout: Number(process.env.STORM_TIMEOUT) || 30000,
+});
+
+if (process.env.STORM_API_TOKEN) {
+  storm.setToken(process.env.STORM_API_TOKEN);
+}
+```
+
+<Note type="warning">
+  {" "}
+  Never hardcode API tokens in production. Use secure environment variables.{" "}
+</Note>
+
+## Next Steps
+
+You're now integrated with Storm!🎉
+
+- **[Wallet Management](/docs/introduction)** - Learn about multi-wallet systems and transfers
+- **[Payment Processing](/docs/quick-start-guide)** - Explore different payment methods and flows
+- **[Transaction Management](/docs/quick-start-guide)** - Understand transaction types and history
+- **[Secure Vault](/docs/quick-start-guide)** - Store sensitive data securely
+- **[Activity Monitoring](/docs/quick-start-guide)** - Track and audit user activities
+- **[Error Handling](/docs/quick-start-guide)** - Comprehensive error management strategies
+
+```
+
+```

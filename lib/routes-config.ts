@@ -20,6 +20,7 @@ export const ROUTES: EachRoute[] = [
         href: "/installation",
       },
       { title: "Process A Payment", href: "/quick-start-guide" },
+      { title: "Integrate API", href: "/integrate-api" },
       {
         title: "Code Samples",
         href: "/project-structure",
